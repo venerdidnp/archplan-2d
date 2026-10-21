@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { Framebuffer, lineDDA, lineBresenham, edge, barycentric, triangle, triangleNaive, triangleStrict, writePPM, readPPM } from './raster.mjs';
 import { psnr } from './metrics.mjs';
+import { asteriskSpokes } from './asterisk.mjs';
+import { lineWuPixels, drawLineWu } from './wu.mjs';
 
 let n = 0;
 const ok = (name, fn) => { fn(); n++; console.log(`ok ${n} - ${name}`); };
@@ -87,6 +89,38 @@ ok('square_fill is byte-identical to ref/square_fill_ref.ppm', () => {
   if (!fs.existsSync(ref)) { writePPM(ref, r.fb, fs); console.log('   (ref did not exist: created from current output — review it by eye!)'); }
   const rf = readPPM(fs.readFileSync(ref));
   assert.equal(psnr(r.fb, rf), Infinity);
+});
+
+ok('asterisk 24 spokes: every spoke matches its expected Chebyshev length (delta <= 1)', () => {
+  const spokes = asteriskSpokes();
+  assert.equal(spokes.length, 24);
+  for (const s of spokes) assert.ok(Math.abs(s.length - s.expected) <= 1);
+});
+
+ok('Wu horizontal line is solid and matches Bresenham pixel positions', () => {
+  const wu = lineWuPixels([2, 1], [9, 1]);
+  const br = lineBresenham([2, 1], [9, 1]);
+  assert.deepEqual(wu.map(p => [p[0], p[1]]), br);
+  assert.ok(wu.every(p => p[2] === 1));
+});
+
+ok('Wu shallow line: coverage sums to 1 in every column; endpoints full', () => {
+  const pts = lineWuPixels([0, 0], [8, 4]);
+  for (let x = 0; x <= 8; x++) {
+    const sum = pts.filter(p => p[0] === x).reduce((s, p) => s + p[2], 0);
+    assert.ok(Math.abs(sum - 1) < 1e-12, `column ${x} sum=${sum}`);
+  }
+  assert.deepEqual(pts.find(p => p[0] === 0 && p[1] === 0), [0, 0, 1]);
+  assert.deepEqual(pts.find(p => p[0] === 8 && p[1] === 4), [8, 4, 1]);
+});
+
+ok('Wu blend: 50% white on black is 128 in sRGB, 188 in linear light', () => {
+  const fl = new Framebuffer(3, 3, [0, 0, 0]);
+  const fn = new Framebuffer(3, 3, [0, 0, 0]);
+  drawLineWu(fl, [0, 0], [2, 1], [255, 255, 255], { linear: true });
+  drawLineWu(fn, [0, 0], [2, 1], [255, 255, 255], { linear: false });
+  assert.deepEqual(fl.get(1, 0), [188, 188, 188]);
+  assert.deepEqual(fn.get(1, 0), [128, 128, 128]);
 });
 
 console.log(`\nALL CHECKS PASSED (${n} ok)`);
