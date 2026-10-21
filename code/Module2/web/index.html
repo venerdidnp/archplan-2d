@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pusaka3D — Denah Three.js</title>
+  <link rel="stylesheet" href="./cvd.css">
+</head>
+<body>
+  <a class="skip-link" href="#plan-canvas">Lewati ke denah</a>
+  <main id="app">
+    <header class="toolbar">
+      <div class="titles">
+        <h1>Denah Pusaka3D</h1>
+        <p id="plan-status" class="status" role="status" aria-live="polite">Memuat denah…</p>
+      </div>
+      <div class="actions">
+        <label class="switch">
+          <input id="cvd-toggle" type="checkbox">
+          <span>Simulate deuteranopia</span>
+        </label>
+        <button id="export-button" type="button">Export PNG</button>
+      </div>
+    </header>
+
+    <div id="viz" class="viz">
+      <div class="canvas-scroll">
+        <canvas id="plan-canvas" width="800" height="600" role="img"
+          aria-label="Denah lantai Pusaka3D: outline polyline dan siluet bangunan">
+          Browser ini tidak mendukung canvas.
+        </canvas>
+      </div>
+
+      <aside class="legend" aria-labelledby="legend-title">
+        <h2 id="legend-title">Legenda</h2>
+        <div class="ramp" aria-hidden="true">
+          <span style="background:#440154"></span>
+          <span style="background:#3b528b"></span>
+          <span style="background:#21918c"></span>
+          <span style="background:#5ec962"></span>
+          <span style="background:#fde725"></span>
+        </div>
+        <ul>
+          <li>
+            <svg class="marker" viewBox="0 0 20 20" aria-hidden="true" style="color:#440154">
+              <line x1="2" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="3"></line>
+            </svg>
+            <span>Dinding</span>
+          </li>
+          <li>
+            <svg class="marker" viewBox="0 0 20 20" aria-hidden="true" style="color:#3b528b">
+              <rect x="4" y="4" width="12" height="12" fill="currentColor"></rect>
+            </svg>
+            <span>Cella</span>
+          </li>
+          <li>
+            <svg class="marker" viewBox="0 0 20 20" aria-hidden="true" style="color:#21918c">
+              <polygon points="10,3 18,17 2,17" fill="currentColor"></polygon>
+            </svg>
+            <span>Tangga</span>
+          </li>
+          <li>
+            <svg class="marker" viewBox="0 0 20 20" aria-hidden="true" style="color:#5ec962">
+              <circle cx="10" cy="10" r="7" fill="currentColor"></circle>
+            </svg>
+            <span>Shrine</span>
+          </li>
+          <li>
+            <svg class="marker" viewBox="0 0 20 20" aria-hidden="true" style="color:#fde725">
+              <polygon points="10,2 18,10 10,18 2,10" fill="currentColor"></polygon>
+            </svg>
+            <span>Sumbu</span>
+          </li>
+        </ul>
+        <p class="legend-note">Ramp viridis 5 langkah; bentuk marker dan label teks menjadi pembeda kedua.</p>
+      </aside>
+    </div>
+
+    <p class="hint">
+      Screenshot: matikan toggle lalu simpan; ulangi dengan toggle menyala.
+      Untuk perbandingan, klik <strong>Export PNG</strong> dan simpan sebagai <code>plan_three.png</code>.
+    </p>
+  </main>
+
+  <svg class="svg-filters" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="deuteranopia" x="-10%" y="-10%" width="120%" height="120%"
+        color-interpolation-filters="linearRGB">
+        <feColorMatrix type="matrix" values="
+          0.367322 0.860646 -0.227968 0 0
+          0.280085 0.672501 0.047413 0 0
+          -0.011820 0.042940 0.968881 0 0
+          0 0 0 1 0">
+        </feColorMatrix>
+      </filter>
+    </defs>
+  </svg>
+
+  <script type="module" src="./viewer.mjs"></script>
+</body>
+</html>

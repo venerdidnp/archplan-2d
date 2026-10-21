@@ -43,7 +43,7 @@ export function readImage(path) {
   return path.toLowerCase().endsWith('.png') ? readPNG(buf) : readPPM(buf);
 }
 
-if (process.argv[1].endsWith('compare.mjs')) {
+if (process.argv[1]?.endsWith('compare.mjs')) {
   const [pa, pb] = process.argv.slice(2);
   if (!pa || !pb) { console.log('usage: node compare.mjs a.(ppm|png) b.(ppm|png)'); process.exit(1); }
   const a = readImage(pa), b = readImage(pb);

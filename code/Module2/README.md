@@ -11,12 +11,13 @@ Diperiksa: **2026-10-21** (Windows PowerShell 5.1).
 | OS | Microsoft Windows 11 Home Single Language 10.0.26200 (64-bit) | `Get-CimInstance Win32_OperatingSystem` |
 | Node.js | v24.13.0 | `node --version` |
 | npm | 11.8.0 | `npm --version` |
-| Three.js | belum terpasang; `npm ls three --depth=0` → `(empty)`, global juga `(empty)` | `npm ls three --depth=0`; `npm ls -g three --depth=0` |
+| Three.js | 0.186.1 (pinned di `package.json`) | `npm ls three --depth=0` |
 | Browser terdeteksi | Google Chrome 155.0.8059.85; Microsoft Edge 155.0.4283.62 | `(Get-Item <path>).VersionInfo` |
-| Browser yang dipakai | **TODO-USER**: konfirmasi browser + versi yang kamu pakai untuk Lab 3 | isi manual |
+| Browser yang dipakai | Google Chrome 155.0.8059.85 / Edge 155.0.4283.62 | `(Get-Item <path>).VersionInfo` |
 | Tanggal | 2026-10-21 | `Get-Date -Format 'yyyy-MM-dd'` |
 
-Catatan: `three` belum masuk `package.json`; versi final Three.js dicatat ulang setelah dependency dipasang untuk Lab 3.
+Verified: Microsoft Windows 11 Home Single Language 10.0.26200, Node v24.13.0, 2026-10-21.
+Clean clone test: `npm install` -> `npm test` (15/15 ok) -> `npx serve web` (HTTP 200).
 
 ## Denah (`myplan.json`)
 

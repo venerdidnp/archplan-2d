@@ -85,7 +85,7 @@ ok('sample-centre: 2x2 rect via centre rule = 4 pixels; corner test = 9 (E1)', (
 
 ok('square_fill is byte-identical to ref/square_fill_ref.ppm', () => {
   const r = squareCoverage(triangle);
-  const ref = 'ref/square_fill_ref.ppm';
+  const ref = new URL('ref/square_fill_ref.ppm', import.meta.url);
   if (!fs.existsSync(ref)) { writePPM(ref, r.fb, fs); console.log('   (ref did not exist: created from current output — review it by eye!)'); }
   const rf = readPPM(fs.readFileSync(ref));
   assert.equal(psnr(r.fb, rf), Infinity);

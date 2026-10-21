@@ -1,0 +1,17 @@
+{
+  "name": "archplan-2d",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node tests.mjs",
+    "serve": "serve web"
+  },
+  "dependencies": {
+    "serve": "14.2.6",
+    "three": "0.186.1"
+  },
+  "overrides": {
+    "compression": "1.8.2"
+  }
+}
