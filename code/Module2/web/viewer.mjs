@@ -21,6 +21,8 @@ if (exportMode) {
   viz.classList.remove('cvd');
 }
 
+THREE.ColorManagement.enabled = false;
+
 let renderer;
 try {
   renderer = new THREE.WebGLRenderer({
@@ -31,7 +33,7 @@ try {
   });
   renderer.setPixelRatio(1);
   renderer.setSize(W, H, false);
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
   renderer.setClearColor(0xf5f5f5, 1);
 } catch (error) {
   status.textContent = `WebGL tidak tersedia: ${error.message}`;
@@ -49,6 +51,13 @@ scene.add(content);
 function colorFromRGB([r, g, b]) {
   return new THREE.Color().setRGB(r / 255, g / 255, b / 255, THREE.SRGBColorSpace);
 }
+
+// raster.mjs lights pixel (x, y) by sampling its centre (x + 0.5, y + 0.5).
+// WebGL rasterises against pixel boundaries, so a vertex left at (x, y) sits
+// exactly between two pixel centres and the 1 px line spills into both rows
+// or columns. Shift every screen point by half a pixel to share the sample
+// convention used by raster.mjs.
+const toPixelCentre = ([x, y]) => [x + 0.5, y + 0.5];
 
 function clearContent() {
   scene.remove(content);
@@ -99,14 +108,17 @@ function drawPlan(plan) {
     if (!polyline.fill) continue;
     const points = polyline.points
       .slice(0, -1)
-      .map(([x, y]) => worldToScreen(plan, x, y, VIEW));
+      .map(([x, y]) => worldToScreen(plan, x, y, VIEW))
+      .map(toPixelCentre);
     const mesh = makeSilhouette(points);
     if (mesh) content.add(mesh);
   }
 
   for (const polyline of plan.polylines) {
     if (polyline.points.length < 2) continue;
-    const points = polyline.points.map(([x, y]) => worldToScreen(plan, x, y, VIEW));
+    const points = polyline.points
+      .map(([x, y]) => worldToScreen(plan, x, y, VIEW))
+      .map(toPixelCentre);
     const rgb = CATEGORY_RGB[polyline.category] || [255, 255, 255];
     content.add(makeOutline(points, rgb));
   }

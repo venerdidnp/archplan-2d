@@ -1,8 +1,10 @@
 // node tests.mjs — checks from the module: E1-E5, watertightness, reference match.
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import { fileURLToPath } from 'node:url';
 import { Framebuffer, lineDDA, lineBresenham, edge, barycentric, triangle, triangleNaive, triangleStrict, writePPM, readPPM } from './raster.mjs';
-import { psnr } from './metrics.mjs';
+import { psnr, diffStats } from './metrics.mjs';
+import { readImage } from './compare.mjs';
 import { asteriskSpokes } from './asterisk.mjs';
 import { lineWuPixels, drawLineWu } from './wu.mjs';
 
@@ -121,6 +123,45 @@ ok('Wu blend: 50% white on black is 128 in sRGB, 188 in linear light', () => {
   drawLineWu(fn, [0, 0], [2, 1], [255, 255, 255], { linear: false });
   assert.deepEqual(fl.get(1, 0), [188, 188, 188]);
   assert.deepEqual(fn.get(1, 0), [128, 128, 128]);
+});
+
+ok('plan_three.png matches out/plan_scratch.ppm: <0.1% different, no interior pixel differs', () => {
+  const scratch = readImage(fileURLToPath(new URL('out/plan_scratch.ppm', import.meta.url)));
+  const three = readImage(fileURLToPath(new URL('plan_three.png', import.meta.url)));
+  assert.equal(scratch.w, 800);
+  assert.equal(scratch.h, 600);
+  assert.equal(three.w, scratch.w);
+  assert.equal(three.h, scratch.h);
+  const stats = diffStats(scratch, three);
+  const different = stats.total - stats.same;
+  assert.ok(
+    different / stats.total < 0.001,
+    `${different}/${stats.total} pixels differ (${(100 * different / stats.total).toFixed(2)}%), expected < 0.1%`,
+  );
+  const isFill = (fb, x, y) => {
+    const i = 3 * (y * fb.w + x);
+    return fb.data[i] === 60 && fb.data[i + 1] === 60 && fb.data[i + 2] === 70;
+  };
+  let interiorDiffs = 0;
+  for (let y = 1; y < scratch.h - 1; y++) {
+    for (let x = 1; x < scratch.w - 1; x++) {
+      const i = y * scratch.w + x;
+      let d = 0;
+      for (let c = 0; c < 3; c++) d = Math.max(d, Math.abs(scratch.data[3 * i + c] - three.data[3 * i + c]));
+      if (d === 0) continue;
+      let deepFill = true;
+      for (let dy = -1; dy <= 1 && deepFill; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          if (!isFill(scratch, x + dx, y + dy) || !isFill(three, x + dx, y + dy)) {
+            deepFill = false;
+            break;
+          }
+        }
+      }
+      if (deepFill) interiorDiffs++;
+    }
+  }
+  assert.equal(interiorDiffs, 0, `${interiorDiffs} interior fill pixels differ`);
 });
 
 console.log(`\nALL CHECKS PASSED (${n} ok)`);
