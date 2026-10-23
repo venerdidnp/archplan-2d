@@ -14,10 +14,10 @@ Diperiksa: **2026-10-21** (Windows PowerShell 5.1).
 | Three.js | 0.186.1 (pinned di `package.json`) | `npm ls three --depth=0` |
 | Browser terdeteksi | Google Chrome 155.0.8059.85; Microsoft Edge 155.0.4283.62 | `(Get-Item <path>).VersionInfo` |
 | Browser yang dipakai | Google Chrome 155.0.8059.85 / Edge 155.0.4283.62 | `(Get-Item <path>).VersionInfo` |
-| Tanggal | 2026-10-21 | `Get-Date -Format 'yyyy-MM-dd'` |
+| Tanggal | 2026-10-23 | `Get-Date -Format 'yyyy-MM-dd'` |
 
-Verified: Microsoft Windows 11 Home Single Language 10.0.26200, Node v24.13.0, 2026-10-21.
-Clean clone test: `npm install` -> `npm test` (15/15 ok) -> `npx serve web` (HTTP 200).
+Verified: Microsoft Windows 11 Home Single Language 10.0.26200, Node v24.13.0, 2026-10-23.
+Clean clone test: `npm install` -> `npm test` (16/16 ok) -> `npx serve web` (HTTP 200).
 
 ## Denah (`myplan.json`)
 

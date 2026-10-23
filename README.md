@@ -26,7 +26,7 @@ Proyek ini bertujuan untuk mempelajari dasar-dasar rendering pipeline 2D:
 # Pasang dependency (three dan serve)
 npm install
 
-# Jalankan rangkaian tes unit (15/15 lulus)
+# Jalankan rangkaian tes unit (16/16 lulus)
 npm test
 
 # Jalankan web server lokal untuk penampil denah
@@ -36,5 +36,5 @@ npx serve web
 
 ## Status & Verifikasi
 
-Verified: Microsoft Windows 11 Home Single Language 10.0.26200, Node v24.13.0, 2026-10-21.
-- `git clone` -> `npm install` -> `npm test` -> `npx serve web` terverifikasi 100% lulus.
+Verified: Microsoft Windows 11 Home Single Language 10.0.26200, Node v24.13.0, 2026-10-23.
+- `git clone` -> `npm install` -> `npm test` (16/16 ok) -> `npx serve web` terverifikasi 100% lulus.
